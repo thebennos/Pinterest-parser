@@ -17,7 +17,7 @@ class Parser {
 	/////////////////////////// Class methods ///////////////////////////
 	
 	public function init_url($username) {
-		$this->base_url = 'http://pinterest.com/' . $username . '/';
+		$this->base_url = 'http://www.pinterest.com/' . $username . '/';
 		return $this->get_data($this->base_url);
 	}
 	
@@ -55,10 +55,12 @@ class Parser {
 	private function get_node_by_class($className, $tagName = null, $parent = null) { 	// TODO: Per ora ricerca singola classe. Permettere un array di classi;
 		if (!is_null($tagName)) {
 			
-			$ref = (isset($parent) && !is_null($parent)) ? $parent : $this->dom;
+			
+			$ref = (isset($parent) && !is_null($parent) && is_object($parent)) ? $parent : $this->dom;
 			$output = array();
 
 			foreach ($ref->getElementsByTagName($tagName) as $el) {
+				
 				if (!is_null($el->attributes)) {
 					foreach($el->attributes as $id => $attr) {
 						if ($attr->name == 'class' && in_array($className, explode(' ', $attr->value))) {
@@ -105,7 +107,7 @@ class Parser {
 		}
 	}
 	private function iterate_node($node) { // utilizzata da get_node_by_class, nella condizione di tagName non specificato
-		if ($node->hasChildNodes()) {
+		if (is_object($node) && $node->hasChildNodes()) {
 			$q = array();
 			foreach($node->childNodes as $n) {
 				if (get_class($n) == 'DOMElement') {
@@ -150,6 +152,7 @@ class Parser {
 	}
 	
 	private function parse_followers_following_page($url) { // Boards: followers, Utente: followers/following
+	
 		if ($this->get_data($url)) {
 			$output = array();
 			
@@ -393,7 +396,7 @@ echo '</pre>';
 
 //////////////////////
 
-$url = 'http://pinterest.com/jwmoz/jmoz/';
+$url = 'www.pinterest.com/jwmoz/';
 // $url = 'http://www.google.it';
 
 $curl = curl_init();
